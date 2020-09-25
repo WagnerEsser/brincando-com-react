@@ -35,11 +35,11 @@ const Edit = (props: RouteComponentProps) => {
             })
     }
 
-    const handleCreate = (values: IItem) => {
+    const handleEdit = (values: IItem) => {
         edit(values)
             .then(() => {
               console.log('Editado com sucesso!');
-              history.push('/');
+              history.push(`/view/${values.id}`);
             });
     }
 
@@ -47,7 +47,7 @@ const Edit = (props: RouteComponentProps) => {
         event.preventDefault()
 
         if (values.value1.length && values.value2.length) {
-            handleCreate(values)
+            handleEdit(values)
             clearForm()
             setInputError(false)
             history.push('/')

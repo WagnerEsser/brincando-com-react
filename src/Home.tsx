@@ -1,5 +1,5 @@
 import { Button, Divider, Input, List, ListItem, Typography } from '@material-ui/core'
-import { Cached, Delete, Edit } from '@material-ui/icons'
+import { Cached, Visibility } from '@material-ui/icons'
 import React, { Fragment, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
@@ -39,7 +39,7 @@ const Home = () => {
     const [values, setValues] = useState<IItem>(emptyState)
     const [items, setItems] = useState<IItem[]>([])
 
-    const update = () => {
+    const refresh = () => {
         const URL = 'http://localhost:8080/items'
         fetch(URL)
             .then(async response => {
@@ -52,7 +52,7 @@ const Home = () => {
     }
 
     useEffect(() => {
-        update()
+        refresh()
     }, [])
 
     function clearForm() {
@@ -70,20 +70,20 @@ const Home = () => {
         })
             .then(async (respostaDoServidor) => {
                 if (respostaDoServidor.ok) {
-                    const resposta = await respostaDoServidor.json();
+                    const resposta = await respostaDoServidor.json()
                     return resposta;
                 }
 
-                throw new Error('Não foi possível cadastrar os dados :(');
+                throw new Error('Não foi possível cadastrar os dados :(')
             });
     }
 
     const handleCreate = (values: IItem) => {
         create(values)
             .then(() => {
-                console.log('Cadastrou com sucesso!');
-                update()
-            });
+                console.log('Cadastrou com sucesso!')
+                refresh()
+            })
     }
 
     const handleSubmit = (event: { preventDefault: () => void }) => {
@@ -93,32 +93,10 @@ const Home = () => {
             handleCreate(values)
             setInputError(false)
             clearForm()
-            update()
+            refresh()
         } else {
             setInputError(true)
         }
-    }
-
-    const handleDelete = (id: string) => (event: { preventDefault: () => void }) => {
-        event.preventDefault()
-
-        const init: RequestInit = {
-            method: 'DELETE',
-            headers: {
-                'Content-type': 'application/json',
-            }
-        }
-
-        return fetch(`http://localhost:8080/items/${id}/`, init)
-            .then(async response => {
-                if (response.ok) {
-                    const resposta = await response.json();
-                    update()
-                    return resposta;
-                }
-
-                throw new Error('Não foi possível excluir o item :(');
-            })
     }
 
     const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
@@ -174,17 +152,13 @@ const Home = () => {
                     {items.map(item =>
                         <Fragment key={item.id}>
                             <ListItem style={{ display: 'flex', placeContent: 'space-between' }}>
-                                <div>
+                                <Link to={`/item/${item.id}`}>
                                     {item.value1} - {item.value2}
-                                </div>
+                                </Link>
                                 <div>
-                                    <Link to={`/edit/${item.id}/${item.value1}/${item.value2}`}>
-                                        <Edit />
+                                    <Link to={`/view/${item.id}`}>
+                                        <Visibility />
                                     </Link>
-                                    &nbsp;
-                                    <a href='.' onClick={handleDelete(item.id)}>
-                                        <Delete />
-                                    </a>
                                 </div>
                             </ListItem>
                             <Divider />
