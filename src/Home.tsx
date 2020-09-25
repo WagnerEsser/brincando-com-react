@@ -1,9 +1,10 @@
-import { Button, Input, List, ListItem, Typography } from '@material-ui/core'
-import { Cached } from '@material-ui/icons'
-import React, { useEffect, useState } from 'react'
+import { Button, Divider, Input, List, ListItem, Typography } from '@material-ui/core'
+import { Cached, Delete, Edit } from '@material-ui/icons'
+import React, { Fragment, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 
-const Wrapper = styled.div`
+export const Wrapper = styled.div`
     width: 500px;
     min-height: 400px;
     margin: 50px auto auto auto;
@@ -12,47 +13,46 @@ const Wrapper = styled.div`
     border-radius: 15px;
     text-align: center;
 `
-
-const FormWrapper = styled.div`
+export const FormWrapper = styled.div`
     display: grid;
     grid-gap: 20px;
 `
-const LoadingWrapper = styled.div`
+export const LoadingWrapper = styled.div`
     width: 100%;
 `
 
-interface IItem {
+export interface IItem {
     id: string
     value1: string
     value2: string
 }
 
-const emptyState: IItem = {
+export const emptyState: IItem = {
     id: '',
     value1: '',
     value2: ''
 }
 
 const Home = () => {
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [inputError, setInputError] = useState(false)
     const [values, setValues] = useState<IItem>(emptyState)
-    const [items, setItems] = useState<IItem[]>([
-        { id: '1', value1: 'aaa', value2: 'bbb' },
-        { id: '2', value1: 'aaa', value2: 'bbb' },
-        { id: '3', value1: 'aaa', value2: 'bbb' },
-        { id: '4', value1: 'aaa', value2: 'bbb' },
-        { id: '5', value1: 'aaa', value2: 'bbb' }
-    ])
+    const [items, setItems] = useState<IItem[]>([])
 
-    useEffect(() => {
+    const update = () => {
         const URL = 'http://localhost:8080/items'
         fetch(URL)
             .then(async response => {
                 const items = await response.json()
                 setItems([...items])
-                setLoading(false)
+                setTimeout(() => {
+                    setLoading(false)
+                }, 500)
             })
+    }
+
+    useEffect(() => {
+        update()
     }, [])
 
     function clearForm() {
@@ -60,16 +60,67 @@ const Home = () => {
         setInputError(false)
     }
 
+    function create(values: IItem) {
+        return fetch('http://localhost:8080/items', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json',
+            },
+            body: JSON.stringify(values),
+        })
+            .then(async (respostaDoServidor) => {
+                if (respostaDoServidor.ok) {
+                    const resposta = await respostaDoServidor.json();
+                    return resposta;
+                }
+
+                throw new Error('Não foi possível cadastrar os dados :(');
+            });
+    }
+
+    const handleCreate = (values: IItem) => {
+        create(values)
+            .then(() => {
+                console.log('Cadastrou com sucesso!');
+                update()
+            });
+    }
+
     const handleSubmit = (event: { preventDefault: () => void }) => {
         event.preventDefault()
+
         if (values.value1.length && values.value2.length) {
-            setItems([...items, values])
-            clearForm()
+            handleCreate(values)
             setInputError(false)
+            clearForm()
+            update()
         } else {
             setInputError(true)
         }
     }
+
+    const handleDelete = (id: string) => (event: { preventDefault: () => void }) => {
+        event.preventDefault()
+
+        const init: RequestInit = {
+            method: 'DELETE',
+            headers: {
+                'Content-type': 'application/json',
+            }
+        }
+
+        return fetch(`http://localhost:8080/items/${id}/`, init)
+            .then(async response => {
+                if (response.ok) {
+                    const resposta = await response.json();
+                    update()
+                    return resposta;
+                }
+
+                throw new Error('Não foi possível excluir o item :(');
+            })
+    }
+
     const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
         const name = event.target.getAttribute('name') || ''
         setValues({
@@ -100,11 +151,11 @@ const Home = () => {
                         value={values.value2}
                         onChange={handleChange}
                     />
-                    { inputError && (
+                    {inputError && (
                         <Typography variant='caption' color='error'>
                             * Os dois campos são obrigatórios
                         </Typography>
-                    ) }
+                    )}
                     <Button name='button' variant='contained' color='primary' onClick={handleSubmit}>
                         Confirmar
                     </Button>
@@ -116,16 +167,36 @@ const Home = () => {
                     <Cached style={{ marginTop: 20 }} />
                     <Typography>Carregando lista...</Typography>
                 </LoadingWrapper>
-            ) }
+            )}
 
-
-            <List>
-                {items.map(item =>
-                    <ListItem key={item.id}>
-                        {item.value1} - {item.value2}
-                    </ListItem>
-                )}
-            </List>
+            { !loading && items.length > 0 && (
+                <List style={{ marginTop: 20 }}>
+                    {items.map(item =>
+                        <Fragment key={item.id}>
+                            <ListItem style={{ display: 'flex', placeContent: 'space-between' }}>
+                                <div>
+                                    {item.value1} - {item.value2}
+                                </div>
+                                <div>
+                                    <Link to={`/edit/${item.id}/${item.value1}/${item.value2}`}>
+                                        <Edit />
+                                    </Link>
+                                    &nbsp;
+                                    <a href='.' onClick={handleDelete(item.id)}>
+                                        <Delete />
+                                    </a>
+                                </div>
+                            </ListItem>
+                            <Divider />
+                        </Fragment>
+                    )}
+                </List>
+            )}
+            { !loading && items.length === 0 && (
+                <Typography color='primary' style={{ marginTop: 50 }}>
+                    Lista Vazia! Realize o cadastro do primeiro item acima!
+                </Typography>
+            )}
         </Wrapper>
     )
 }
