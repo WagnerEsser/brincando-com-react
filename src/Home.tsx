@@ -1,46 +1,31 @@
-import { Button, Divider, Input, List, ListItem, Typography } from '@material-ui/core'
+import { Button, Divider, Input, List, ListItem, Tooltip, Typography } from '@material-ui/core'
 import { Cached, Visibility } from '@material-ui/icons'
 import React, { Fragment, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import styled from 'styled-components'
-
-export const Wrapper = styled.div`
-    width: 500px;
-    min-height: 400px;
-    margin: 50px auto auto auto;
-    padding: 40px;
-    background-color: #d7d7d7;
-    border-radius: 15px;
-    text-align: center;
-`
-export const FormWrapper = styled.div`
-    display: grid;
-    grid-gap: 20px;
-`
-export const LoadingWrapper = styled.div`
-    width: 100%;
-`
-
-export interface IItem {
-    id: string
-    value1: string
-    value2: string
-}
-
-export const emptyState: IItem = {
-    id: '',
-    value1: '',
-    value2: ''
-}
+import { URL_BASE } from '.'
+import Base from './Base'
+import { emptyState, ITouristSpot } from './interfaces'
+import Modal from './Modal'
+import { AddButton, FormWrapper, LoadingWrapper } from './style'
 
 const Home = () => {
     const [loading, setLoading] = useState(true)
     const [inputError, setInputError] = useState(false)
-    const [values, setValues] = useState<IItem>(emptyState)
-    const [items, setItems] = useState<IItem[]>([])
+    const [openList, setOpenList] = useState(false)
+    const [openForm, setOpenForm] = useState(false)
+    const [values, setValues] = useState<ITouristSpot>(emptyState)
+    const [items, setItems] = useState<ITouristSpot[]>([])
+
+    const handleOpenList = () => {
+        setOpenList(value => !value)
+    }
+
+    const handleOpenForm = () => {
+        setOpenForm(value => !value)
+    }
 
     const refresh = () => {
-        const URL = 'http://localhost:8080/items'
+        const URL = URL_BASE + '/items'
         fetch(URL)
             .then(async response => {
                 const items = await response.json()
@@ -60,8 +45,8 @@ const Home = () => {
         setInputError(false)
     }
 
-    function create(values: IItem) {
-        return fetch('http://localhost:8080/items', {
+    function create(values: ITouristSpot) {
+        return fetch(URL_BASE + '/items', {
             method: 'POST',
             headers: {
                 'Content-type': 'application/json',
@@ -78,7 +63,7 @@ const Home = () => {
             });
     }
 
-    const handleCreate = (values: IItem) => {
+    const handleCreate = (values: ITouristSpot) => {
         create(values)
             .then(() => {
                 console.log('Cadastrou com sucesso!')
@@ -89,7 +74,8 @@ const Home = () => {
     const handleSubmit = (event: { preventDefault: () => void }) => {
         event.preventDefault()
 
-        if (values.value1.length && values.value2.length) {
+        if (values.name.length && values.description.length) {
+            handleOpenForm()
             handleCreate(values)
             setInputError(false)
             clearForm()
@@ -108,70 +94,74 @@ const Home = () => {
     }
 
     return (
-        <Wrapper>
-            <Typography variant='h4' style={{ marginBottom: 30 }}>
-                Página inicial
-            </Typography>
+        <Base onClick={handleOpenList}>
+            <Modal open={openList && !openForm} title='Pontos turísticos!' onClick={handleOpenList}>
+                {loading && (
+                    <LoadingWrapper>
+                        <Cached />
+                        <Typography>Carregando lista...</Typography>
+                    </LoadingWrapper>
+                )}
 
-            <form onSubmit={handleSubmit}>
-                <FormWrapper>
-                    <Input
-                        placeholder='Valor 1'
-                        name='value1'
-                        type='text'
-                        value={values.value1}
-                        onChange={handleChange}
-                    />
-                    <Input
-                        placeholder='Valor 2'
-                        name='value2'
-                        type='text'
-                        value={values.value2}
-                        onChange={handleChange}
-                    />
-                    {inputError && (
-                        <Typography variant='caption' color='error'>
-                            * Os dois campos são obrigatórios
-                        </Typography>
-                    )}
-                    <Button name='button' variant='contained' color='primary' onClick={handleSubmit}>
-                        Confirmar
-                    </Button>
-                </FormWrapper>
-            </form>
-
-            { loading && (
-                <LoadingWrapper>
-                    <Cached style={{ marginTop: 20 }} />
-                    <Typography>Carregando lista...</Typography>
-                </LoadingWrapper>
-            )}
-
-            { !loading && items.length > 0 && (
-                <List style={{ marginTop: 20 }}>
-                    {items.map(item =>
-                        <Fragment key={item.id}>
-                            <ListItem style={{ display: 'flex', placeContent: 'space-between' }}>
-                                <Link to={`/item/${item.id}`}>
-                                    {item.value1} - {item.value2}
-                                </Link>
-                                <div>
-                                    <Link to={`/view/${item.id}`}>
-                                        <Visibility />
+                {!loading && items.length > 0 && (
+                    <List style={{ marginTop: 20 }}>
+                        {items.map(item =>
+                            <Fragment key={item.id}>
+                                <ListItem style={{ display: 'flex', placeContent: 'space-between' }}>
+                                    <Link to={`/item/${item.id}`}>
+                                        {item.name} - {item.description}
                                     </Link>
-                                </div>
-                            </ListItem>
-                            <Divider />
-                        </Fragment>
-                    )}
-                </List>
-            )}
-            { !loading && items.length === 0 && (
-                <Typography color='primary' style={{ marginTop: 50 }}>
-                    Lista Vazia! Realize o cadastro do primeiro item acima!
-                </Typography>
-            )}
-        </Wrapper>
+                                    <div>
+                                        <Link to={`/view/${item.id}`}>
+                                            <Visibility />
+                                        </Link>
+                                    </div>
+                                </ListItem>
+                                <Divider />
+                            </Fragment>
+                        )}
+                    </List>
+                )}
+                {!loading && items.length === 0 && (
+                    <Typography color='primary' style={{ marginTop: 50 }}>
+                        Lista Vazia! Realize o cadastro do primeiro item abaixo!
+                    </Typography>
+                )}
+
+                <Tooltip title='Adicionar novo ponto turístico'>
+                    <AddButton fontSize='large' color='primary' onClick={handleOpenForm} />
+                </Tooltip>
+            </Modal>
+
+            <Modal open={openForm} title='Novo ponto turístico' onClick={handleOpenForm}>
+                <form onSubmit={handleSubmit}>
+                    <FormWrapper>
+                        <Input
+                            placeholder='Nome'
+                            name='name'
+                            type='text'
+                            value={values.name}
+                            onChange={handleChange}
+                        />
+                        <Input
+                            placeholder='Descrição'
+                            name='description'
+                            type='text'
+                            value={values.description}
+                            onChange={handleChange}
+                        />
+                        {inputError && (
+                            <Typography variant='caption' color='error'>
+                                * Os dois campos são obrigatórios
+                            </Typography>
+                        )}
+                        <Button name='button' variant='contained' color='primary' onClick={handleSubmit}>
+                            Cadastrar
+                        </Button>
+                    </FormWrapper>
+                </form>
+            </Modal>
+        </Base>
     )
 }
 

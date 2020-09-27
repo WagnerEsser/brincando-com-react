@@ -7,12 +7,14 @@ import PageNotFound from './PageNotFound'
 import Edit from './Edit'
 import View from './View'
 
+export const URL_BASE = 'http://<ip_servidor>:8080'
+
 ReactDOM.render(
     <BrowserRouter>
         <Switch>
             <Route path="/" component={ Home } exact />
             <Route path="/view/:id" component={ View } />
-            <Route path="/edit/:id/:value1/:value2" component={ Edit } />
+            <Route path="/edit/:id/:name/:description" component={ Edit } />
             <Route component={ PageNotFound } />
         </Switch>
     </BrowserRouter>,
