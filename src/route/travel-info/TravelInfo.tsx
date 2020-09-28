@@ -22,30 +22,34 @@ const TravelInfo: FC<IProps> = props => {
 
     const handleUpdate = () => {
         setLoading(true)
-        setTimeout(() => {
-            fetch(`${IP_SERVER}/travelOptions`)
-                .then(async response => {
-                    if (response.ok) {
-                        const options: ITravel[] = await response.json();
-                        const travelOption = options[Math.floor(Math.random() * options.length)]
+        fetch(`${IP_SERVER}/travelOptions`)
+            .then(async response => {
+                if (response.ok) {
+                    const options: ITravel[] = await response.json();
+                    const travelOption = options[Math.floor(Math.random() * options.length)]
 
-                        setValues(travelOption)
-                    }
+                    setValues(travelOption)
+                }
+                setTimeout(() => {
                     setLoading(false)
-                    throw new Error('Ocorreu algum erro na comunicação com o servidor');
-                }).catch(err => console.log(err))
-        }, 1000)
+                }, 1000)
+                throw new Error('Ocorreu algum erro na comunicação com o servidor');
+            }).catch(err => console.log(err))
     }
 
     useEffect(() => {
         handleUpdate()
     }, [])
 
-    const handleClick = () => {
+    const handleConfirm = () => {
         return fetch(`${IP_SERVER}/travels`, {
             method: 'POST',
             headers: { 'Content-type': 'application/json' },
-            body: JSON.stringify({ ...values, date: new Date().toDateString() }),
+            body: JSON.stringify({
+                ...values,
+                id: undefined,
+                date: new Date().toDateString()
+            }),
         })
             .then(async response => {
                 if (response.ok) {
@@ -86,7 +90,7 @@ const TravelInfo: FC<IProps> = props => {
                         </Typography>
                     </>
                 )}
-                {!values && (
+                {!values && !loading && (
                     <Typography color='primary' style={{ marginTop: 15, marginBottom: 20 }}>
                         Não há motoristas disponíveis.
                     </Typography>
@@ -97,9 +101,9 @@ const TravelInfo: FC<IProps> = props => {
                 <Button variant='contained' color='secondary' onClick={props.onClose} style={{ marginRight: 10 }}>
                     Cancelar
                 </Button>
-                <Button variant='contained' color='primary' onClick={handleClick} disabled={loading}>
+                <Button variant='contained' color='primary' onClick={handleConfirm} disabled={loading}>
                     Confirmar
-            </Button>
+                </Button>
             </Wrapper>
         </Dialog>
     )

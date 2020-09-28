@@ -46,7 +46,6 @@ const Login = () => {
                         user.password === values.password
                     )
                     if (find) {
-                        localStorage.setItem('login', values.login)
                         history.push('/map')
                     } else {
                         setError('Login e senha inválidos! Tente novamente.')
@@ -54,7 +53,6 @@ const Login = () => {
 
                     return users;
                 }
-
                 throw new Error('Ocorreu algum erro na comunicação com o servidor');
             }).catch(err => console.log(err))
     }

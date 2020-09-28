@@ -8,7 +8,7 @@ import Travels from './travels/Travels'
 import Page404 from './404'
 import './css-reset.css'
 
-export const IP_SERVER = 'http://localhost:8080'
+export const IP_SERVER = 'http://192.168.0.129:8080'
 
 ReactDOM.render(
     <BrowserRouter>

@@ -44,18 +44,18 @@ const Travels: FC = () => {
 
     const handleSearch = () => {
         setLoading(true)
-        setTimeout(() => {
-            fetch(`${IP_SERVER}/travels`)
-                .then(async response => {
-                    if (response.ok) {
-                        const travels: ITravel[] = await response.json();
-                        setTravels(travels)
-                    } else {
-                        throw new Error('Ocorreu algum erro na comunicação com o servidor');
-                    }
+        fetch(`${IP_SERVER}/travels`)
+            .then(async response => {
+                if (response.ok) {
+                    const travels: ITravel[] = await response.json();
+                    setTravels(travels)
+                } else {
+                    throw new Error('Ocorreu algum erro na comunicação com o servidor');
+                }
+                setTimeout(() => {
                     setLoading(false)
-                }).catch(err => console.log(err))
-        }, 1000)
+                }, 1000)
+            }).catch(err => console.log(err))
     }
 
     useEffect(() => {
@@ -90,7 +90,6 @@ const Travels: FC = () => {
     }
 
     const handleRemove = (id?: string) => () => {
-        console.log(id)
         if (id) {
             return fetch(`${IP_SERVER}/travels/${id}/`, {
                 method: 'DELETE',
@@ -149,7 +148,7 @@ const Travels: FC = () => {
             )}
 
             { !loading && travels.length === 0 && (
-                <Typography color='primary' style={{marginBottom: 15}}>
+                <Typography color='primary' style={{ marginBottom: 15 }}>
                     Não há viagens registradas.
                 </Typography>
             )}
