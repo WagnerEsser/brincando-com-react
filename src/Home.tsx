@@ -28,7 +28,7 @@ const Home = () => {
         const URL = URL_BASE + '/items'
         fetch(URL)
             .then(async response => {
-                const items = await response.json()
+                const items = await response.json() as ITouristSpot[]
                 setItems([...items])
                 setTimeout(() => {
                     setLoading(false)
