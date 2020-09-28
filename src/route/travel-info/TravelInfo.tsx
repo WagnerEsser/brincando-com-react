@@ -2,9 +2,14 @@ import { Button, Dialog, Typography } from '@material-ui/core'
 import { Close } from '@material-ui/icons'
 import React, { FC, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
+import styled from 'styled-components'
 import { IP_SERVER } from '../..'
 import { ITravel } from '../../travels/Travels'
 
+const Wrapper = styled.div`
+    padding: 30px;
+    
+`
 interface IProps {
     open: boolean
     onClose(): void
@@ -53,37 +58,49 @@ const TravelInfo: FC<IProps> = props => {
 
     return (
         <Dialog open={props.open} onClose={props.onClose}>
-            <div onClick={props.onClose} style={{ cursor: 'pointer' }}>
-                <Close style={{ float: 'right' }} />
-            </div>
-            { loading && (
-                <Typography color='textPrimary'>
-                    Carregando...
-                </Typography>
-            )}
-            { values && !loading && (
-                <>
-                    <Typography>Motorista: {values.driver}</Typography>
-                    <Typography>Placa: {values.board}</Typography>
-                    <Typography>Locais vagos: {values.vacantLocations}</Typography>
-                    <Typography>Valor: R$ {values.value}</Typography>
-                    <Typography>Tempo de espera: {values.waitingTime} min</Typography>
-                </>
-            )}
-            { !values && (
-                <Typography color='primary'>
-                    Não há motoristas disponíveis.
-                </Typography>
-            )}
-            <Button variant='contained' color='default' onClick={handleUpdate}>
-                Buscar outro
+            <Wrapper>
+                <div onClick={props.onClose} style={{ cursor: 'pointer' }}>
+                    <Close style={{ float: 'right' }} />
+                </div>
+                {loading && (
+                    <Typography color='textPrimary' style={{ marginBottom: 20 }}>
+                        Carregando...
+                    </Typography>
+                )}
+                {values && !loading && (
+                    <>
+                        <Typography>
+                            <strong>Motorista:</strong> {values.driver}
+                        </Typography>
+                        <Typography>
+                            <strong>Placa:</strong> {values.board}
+                        </Typography>
+                        <Typography>
+                            <strong>Locais vagos:</strong> {values.vacantLocations}
+                        </Typography>
+                        <Typography>
+                            <strong>Valor:</strong> R$ {values.value}
+                        </Typography>
+                        <Typography style={{ marginBottom: 20 }}>
+                            <strong>Tempo de espera:</strong> {values.waitingTime} min
+                        </Typography>
+                    </>
+                )}
+                {!values && (
+                    <Typography color='primary' style={{ marginTop: 15, marginBottom: 20 }}>
+                        Não há motoristas disponíveis.
+                    </Typography>
+                )}
+                <Button variant='contained' color='default' onClick={handleUpdate} style={{ marginRight: 10 }}>
+                    Buscar outro
+                </Button>
+                <Button variant='contained' color='secondary' onClick={props.onClose} style={{ marginRight: 10 }}>
+                    Cancelar
+                </Button>
+                <Button variant='contained' color='primary' onClick={handleClick} disabled={loading}>
+                    Confirmar
             </Button>
-            <Button variant='contained' color='secondary' onClick={props.onClose}>
-                Cancelar
-            </Button>
-            <Button variant='contained' color='primary' onClick={handleClick} disabled={loading}>
-                Confirmar
-            </Button>
+            </Wrapper>
         </Dialog>
     )
 }

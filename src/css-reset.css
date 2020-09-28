@@ -9,12 +9,12 @@ html, body {
 }
 
 a {
-    color: inherit;
+    color: #1a0dab;
     text-decoration: none;
 }
 
 a:hover {
-    color: gray;
+    color: #3e2fe0;
 }
 
 #root {

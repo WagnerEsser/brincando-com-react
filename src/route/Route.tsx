@@ -1,7 +1,26 @@
-import { IconButton, Input, Typography } from '@material-ui/core'
+import { Button, Input, Typography } from '@material-ui/core'
 import { Search } from '@material-ui/icons'
 import React, { useState } from 'react'
+import styled from 'styled-components'
 import TravelInfo from './travel-info/TravelInfo'
+
+const Wrapper = styled.div`
+    margin-left: auto;
+    margin-right: auto;
+    width: 350px;
+    min-height: 250px;
+    margin-top: 100px;
+    margin-bottom: 30px;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    border: 2px solid black;
+`
+const Form = styled.div`
+    text-align: center;
+`
 
 export interface IRoute {
     origin: string
@@ -38,34 +57,39 @@ const Route = () => {
     }
 
     return (
-        <div style={{
-            width: 300,
-            height: 300,
-            display: 'flex',
-            flexDirection: 'column'
-        }}>
+        <Wrapper>
+            <Typography variant='h4' style={{ marginBottom: 20 }}>
+                Insira seu trajeto:
+            </Typography>
+
             <form onSubmit={handleSubmit}>
-                <Input
-                    placeholder='Origem'
-                    type='text'
-                    name='origin'
-                    value={values.origin}
-                    onChange={handleChange}
-                />
-                <Input
-                    placeholder='Destino'
-                    type='text'
-                    name='destiny'
-                    value={values.destiny}
-                    onChange={handleChange}
-                />
-                <IconButton color='primary' onClick={handleSubmit}>
-                    <Search />
-                </IconButton>
+                <Form>
+                    <Input
+                        placeholder='Origem'
+                        type='text'
+                        name='origin'
+                        value={values.origin}
+                        onChange={handleChange}
+                    />
+                    <Input
+                        placeholder='Destino'
+                        type='text'
+                        name='destiny'
+                        value={values.destiny}
+                        onChange={handleChange}
+                    />
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={handleSubmit}
+                        style={{ marginTop: 15 }}>
+                        <Search /> Pesquisar motoristas
+                    </Button>
+                </Form>
             </form>
 
             { error && (
-                <Typography style={{ color: 'red' }}>
+                <Typography style={{ color: 'red', marginTop: 15 }}>
                     {error}
                 </Typography>
             )}
@@ -73,7 +97,7 @@ const Route = () => {
             { openModal && (
                 <TravelInfo open={openModal} onClose={handleClose} />
             )}
-        </div>
+        </Wrapper>
     )
 }
 

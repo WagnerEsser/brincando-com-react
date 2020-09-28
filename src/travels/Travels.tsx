@@ -1,10 +1,31 @@
 import { Button, Dialog, Input, Typography } from '@material-ui/core'
-import { Close } from '@material-ui/icons'
+import { Close, Delete, Edit } from '@material-ui/icons'
 import { format } from 'date-fns'
 import React, { FC, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import styled from 'styled-components'
 import { IP_SERVER } from '..'
 
+
+const Wrapper = styled.div`
+    margin-left: auto;
+    margin-right: auto;
+    width: 500px;
+    min-height: 400px;
+    margin-top: 70px;
+    margin-bottom: 30px;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    border: 2px solid black;
+`
+const WrapperEdit = styled.div`
+    padding: 30px;
+    text-align: center;
+    
+`
 export interface ITravel {
     id?: string
     driver: string
@@ -68,38 +89,68 @@ const Travels: FC = () => {
             }).catch(err => console.log(err))
     }
 
-    const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) =>  {
+    const handleRemove = (id?: string) => () => {
+        console.log(id)
+        if (id) {
+            return fetch(`${IP_SERVER}/travels/${id}/`, {
+                method: 'DELETE',
+                headers: { 'Content-type': 'application/json' }
+            })
+                .then(async response => {
+                    if (response.ok) {
+                        handleSearch()
+                    } else {
+                        throw new Error('Não foi possível excluir o item :(');
+                    }
+                })
+        }
+    }
+
+    const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
         if (selected) {
             setSelected({ ...selected, value: event.target.value as string })
         }
     }
 
     return (
-        <>
-            <Typography variant='h3'>Suas viagens</Typography>
+        <Wrapper>
+            <Typography variant='h3' style={{ marginBottom: 20 }}>
+                Suas viagens
+            </Typography>
 
             { loading && (
-                <Typography color='textPrimary'>
+                <Typography color='textPrimary' style={{ marginBottom: 20 }}>
                     Carregando...
                 </Typography>
             )}
 
             { travels.map(travel =>
-                <>
-                    <Typography>Motorista: {travel.driver}</Typography>
-                    <Typography>Placa: {travel.board}</Typography>
-                    <Typography>Valor pago: R$ {travel.value}</Typography>
-                    <Button size='small' variant='contained' onClick={handleSelect(travel)}>
-                        Editar valor pago
-                    </Button>
-                    <Typography>Data: {format(new Date(travel.date), 'dd/MM/yyyy')}</Typography>
+                <div key={travel.id}>
+                    <Typography>
+                        <strong>Motorista:</strong> {travel.driver}
+                    </Typography>
+                    <Typography>
+                        <strong>Placa:</strong> {travel.board}
+                    </Typography>
+                    <Typography>
+                        <strong>Valor pago:</strong> R$ {travel.value}&nbsp;
+                        <span onClick={handleSelect(travel)} style={{ cursor: 'pointer' }}>
+                            <Edit fontSize='small' />
+                        </span>
+                    </Typography>
+                    <Typography>
+                        <strong>Data:</strong> {format(new Date(travel.date), 'dd/MM/yyyy')}
+                    </Typography>
+                    <div onClick={handleRemove(travel.id)} style={{ cursor: 'pointer' }}>
+                        <Delete />
+                    </div>
                     <br />
-                </>
+                </div>
             )}
-            
+
             { !loading && travels.length === 0 && (
-                <Typography color='primary'>
-                    Não há viagens registradas ainda.
+                <Typography color='primary' style={{marginBottom: 15}}>
+                    Não há viagens registradas.
                 </Typography>
             )}
 
@@ -108,19 +159,22 @@ const Travels: FC = () => {
             </Link>
 
             <Dialog open={editOpen} onClose={handleOpen}>
-                <div onClick={handleOpen} style={{ cursor: 'pointer' }}>
-                    <Close />
-                </div>
-                <Input
-                    type='text'
-                    value={selected?.value}
-                    onChange={handleChange}
-                />
-                <Button variant='contained' color='primary' onClick={handleEditPrice}>
-                    Salvar
-                </Button>
+                <WrapperEdit>
+                    <div onClick={handleOpen} style={{ cursor: 'pointer' }}>
+                        <Close style={{ float: 'right' }} />
+                    </div>
+                    <Input
+                        type='text'
+                        value={selected?.value}
+                        onChange={handleChange}
+                        style={{ marginTop: 20, marginBottom: 20 }}
+                    />
+                    <Button variant='contained' color='primary' onClick={handleEditPrice}>
+                        Salvar
+                    </Button>
+                </WrapperEdit>
             </Dialog>
-        </>
+        </Wrapper>
     )
 }
 

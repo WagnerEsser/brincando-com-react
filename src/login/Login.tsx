@@ -1,7 +1,25 @@
 import { Button, Input, Typography } from '@material-ui/core'
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
+import styled from 'styled-components'
 import { IP_SERVER } from '..'
+
+const Wrapper = styled.div`
+    margin-left: auto;
+    margin-right: auto;
+    width: 350px;
+    min-height: 350px;
+    margin-top: 100px;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    border: 2px solid black;
+`
+const Form = styled.div`
+    text-align: center;
+`
 
 export interface ILogin {
     login: string
@@ -49,11 +67,13 @@ const Login = () => {
     }
 
     return (
-        <div>
-            <Typography variant='h3'>For You</Typography>
+        <Wrapper>
+            <Typography variant='h3' style={{ marginBottom: 20 }}>
+                For You
+            </Typography>
 
             <form onSubmit={handleConfirm}>
-                <div>
+                <Form>
                     <Input
                         name='login'
                         type='text'
@@ -68,26 +88,30 @@ const Login = () => {
                         value={values.password}
                         onChange={handleChange}
                     />
-                    <Button variant='contained' onClick={handleConfirm} color='primary'>
+                    <Button
+                        variant='contained'
+                        onClick={handleConfirm}
+                        color='primary'
+                        style={{ marginBottom: 20, marginTop: 20 }}>
                         Entrar
                     </Button>
-                </div>
+                </Form>
             </form>
 
             { error && (
-                <Typography style={{ color: 'red' }}>
+                <Typography style={{ color: 'red', marginBottom: 20 }}>
                     {error}
                 </Typography>
             )}
 
-            <Typography style={{ color: 'blue', cursor: 'pointer' }}>
+            <Typography style={{ color: 'blue', cursor: 'pointer', marginBottom: 5 }}>
                 Esqueceu a senha?
             </Typography>
 
             <Button variant='contained' color='secondary'>
                 Criar nova conta
             </Button>
-        </div>
+        </Wrapper>
     )
 }
 
