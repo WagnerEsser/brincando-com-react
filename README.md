@@ -1,7 +1,9 @@
 ### Dependências
 
 - npm
+    - versão utilizada: 6.14.5
 - node
+    - versão utilizada: 12.9.1
 
 ### Instalação:
 
@@ -12,7 +14,7 @@
 
 ### Configuração:
 
-- Na pasta "back", no arquivo **src/index.tsx** altere **<ip_servidor>** pelo IP da máquina.
+- Na pasta "back", no arquivo **src/index.tsx** altere **<ip_server>** pelo IP da máquina.
 
 ### Execução:
 
