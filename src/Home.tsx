@@ -25,11 +25,16 @@ const Home = () => {
     }
 
     const refresh = () => {
+        setLoading(true)
         const URL = URL_BASE + '/items'
         fetch(URL)
             .then(async response => {
-                const items = await response.json() as ITouristSpot[]
-                setItems([...items])
+                if (response.ok) {
+                    const items = await response.json() as ITouristSpot[]
+                    setItems([...items])
+                } else {
+                    alert('Erro na conexão com o banco.')
+                }
                 setTimeout(() => {
                     setLoading(false)
                 }, 500)
@@ -48,9 +53,7 @@ const Home = () => {
     function create(values: ITouristSpot) {
         return fetch(URL_BASE + '/items', {
             method: 'POST',
-            headers: {
-                'Content-type': 'application/json',
-            },
+            headers: { 'Content-type': 'application/json' },
             body: JSON.stringify(values),
         })
             .then(async (respostaDoServidor) => {
@@ -79,7 +82,6 @@ const Home = () => {
             handleCreate(values)
             setInputError(false)
             clearForm()
-            refresh()
         } else {
             setInputError(true)
         }

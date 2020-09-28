@@ -79,8 +79,8 @@ const View = (props: RouteComponentProps) => {
                             <Link to={`/edit/${values.id}/${values.name}/${values.description}`}>
                                 <Edit />
                             </Link>
-                        &nbsp;
-                        <a href='.' onClick={handleDelete(values.id)}>
+                            &nbsp;
+                            <a href='.' onClick={handleDelete(values.id)}>
                                 <Delete />
                             </a>
                         </div>
