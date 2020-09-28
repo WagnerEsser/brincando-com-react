@@ -1,8 +1,12 @@
 import { Button, Input, Typography } from '@material-ui/core'
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { ILogin } from './interfaces'
-import { Form, Wrapper } from './style'
+import { IP_SERVER } from '..'
+
+export interface ILogin {
+    login: string
+    password: string
+}
 
 const initial: ILogin = {
     login: '',
@@ -15,9 +19,7 @@ const Login = () => {
     const history = useHistory()
 
     const handleConfirm = () => {
-        console.log('oi')
-
-        return fetch('http://localhost:8080/users')
+        return fetch(`${IP_SERVER}/users`)
             .then(async response => {
                 if (response.ok) {
                     const users: ILogin[] = await response.json();
@@ -47,11 +49,11 @@ const Login = () => {
     }
 
     return (
-        <Wrapper>
+        <div>
             <Typography variant='h3'>For You</Typography>
 
             <form onSubmit={handleConfirm}>
-                <Form>
+                <div>
                     <Input
                         name='login'
                         type='text'
@@ -69,7 +71,7 @@ const Login = () => {
                     <Button variant='contained' onClick={handleConfirm} color='primary'>
                         Entrar
                     </Button>
-                </Form>
+                </div>
             </form>
 
             { error && (
@@ -85,7 +87,7 @@ const Login = () => {
             <Button variant='contained' color='secondary'>
                 Criar nova conta
             </Button>
-        </Wrapper>
+        </div>
     )
 }
 

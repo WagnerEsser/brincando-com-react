@@ -1,8 +1,12 @@
 import { IconButton, Input, Typography } from '@material-ui/core'
 import { Search } from '@material-ui/icons'
 import React, { useState } from 'react'
-import { IRoute } from './interfaces'
 import TravelInfo from './travel-info/TravelInfo'
+
+export interface IRoute {
+    origin: string
+    destiny: string
+}
 
 const initial: IRoute = {
     origin: '',
