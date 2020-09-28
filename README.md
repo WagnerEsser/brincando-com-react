@@ -14,7 +14,7 @@
 
 ### Configuração:
 
-- Na pasta "back", no arquivo **src/index.tsx** altere **<ip_server>** pelo IP da máquina.
+- Na pasta "front", no arquivo **src/index.tsx** altere **<ip_server>** pelo IP da máquina.
 
 ### Execução:
 
