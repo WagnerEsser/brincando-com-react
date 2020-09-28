@@ -13,7 +13,6 @@ const Edit = (props: RouteComponentProps) => {
     const history = useHistory()
     const [inputError, setInputError] = useState(false)
     const [values, setValues] = useState<ITouristSpot>(itemEdit)
-    console.log(values)
 
     const handleOpenList = () => {
         history.push('/')
