@@ -27,3 +27,5 @@
 
 - No navegador acesse: `http://localhost:3000/`
 - Para acesso externo: `http://<ip_servidor>:3000/`
+
+- Obs.: caso ocorra problema de CORS (identificável pelo console do navegador), tente outro navegador ou dispositivo. Se mesmo assim persistir o problema, utilize `http://localhost:3000/` para testes na máquina local.
